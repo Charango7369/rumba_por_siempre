@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entorno virtual
+venv/
+.venv/
+env/
+ENV/
+
+# Variables de entorno
+.env
+.env.local
+.env.*.local
+
+# Base de datos local
+*.db
+*.sqlite
+*.sqlite3
+
+# Alembic / migraciones temporales
+alembic/versions/*.pyc
+
+# Logs
+*.log
+logs/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Type checking / linting
+.mypy_cache/
+.ruff_cache/
+.pyre/
+
+# VS Code
+.vscode/
+.history/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Docker
+*.pid
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+
+# Build / distribución
+build/
+dist/
+*.egg-info/
+.eggs/
