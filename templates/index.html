@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Rumba X Siempre ofrece sonido profesional NEXO STM, luces, pantallas y produccion tecnica para eventos."
+    >
+    <title>Rumba X Siempre | Sonido & Luces</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="#inicio" aria-label="Rumba X Siempre">
+        <img src="{{ url_for('static', path='/img/rxs-logo.png') }}" alt="Logo Rumba X Siempre">
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" data-menu-toggle>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="main-nav" data-nav>
+        <a href="#servicios">Servicios</a>
+        <a href="#paquetes">Paquetes</a>
+        <a href="#cotizar">Cotizar</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="inicio" aria-label="Portada Rumba X Siempre">
+        <div class="hero-media" aria-hidden="true"></div>
+        <div class="hero-overlay" aria-hidden="true"></div>
+        <div class="hero-content">
+          <p class="eyebrow">Sonido profesional NEXO STM</p>
+          <h1>Rumba X Siempre</h1>
+          <p class="hero-copy">
+            Pantallas, luces y sonido de alto impacto para fiestas, conciertos,
+            bodas, promociones y eventos corporativos.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#cotizar">Reservar fecha</a>
+            <a class="btn btn-secondary" href="tel:+59172836437">Llamar 72836437</a>
+          </div>
+        </div>
+        <aside class="hero-badge" aria-label="Datos principales">
+          <span>Reservas</span>
+          <strong>72836437</strong>
+        </aside>
+      </section>
+
+      <section class="proof-strip" aria-label="Especialidades">
+        <span>Siempre en los mejores eventos</span>
+        <span>Pantallas</span>
+        <span>Luces</span>
+        <span>Sonido NEXO STM</span>
+      </section>
+
+      <section class="section services" id="servicios">
+        <div class="section-heading">
+          <p class="eyebrow">Produccion tecnica</p>
+          <h2>Todo lo que necesita una noche memorable</h2>
+        </div>
+        <div class="service-grid">
+          <article class="service-card">
+            <span class="service-icon">S</span>
+            <h3>Sonido profesional</h3>
+            <p>Sistema NEXO STM, microfonia y mezcla preparada para eventos de alto nivel.</p>
+          </article>
+          <article class="service-card">
+            <span class="service-icon">L</span>
+            <h3>Luces y efectos</h3>
+            <p>Ambientes dinamicos con iluminacion escenica, movimiento, humo y color.</p>
+          </article>
+          <article class="service-card">
+            <span class="service-icon">P</span>
+            <h3>Pantallas LED</h3>
+            <p>Visuales, videos, marcas, nombres y contenido en vivo para potenciar el show.</p>
+          </article>
+          <article class="service-card">
+            <span class="service-icon">E</span>
+            <h3>Eventos completos</h3>
+            <p>Planificacion tecnica, montaje, prueba de sonido y soporte durante el evento.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section packages" id="paquetes">
+        <div class="section-heading">
+          <p class="eyebrow">Opciones RxS</p>
+          <h2>Paquetes pensados para distintos formatos</h2>
+        </div>
+        <div class="package-grid">
+          <article class="package-card">
