@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session  # <-- Usamos Session síncrona
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import select
 from app.database import get_db
 from app.models.lead import Lead
+from app.models.servicio import Servicio
 from app.schemas.lead import LeadCreate, LeadResponse
+from app.schemas.servicio import ServicioResponse
 import time
 
 router = APIRouter()
@@ -20,7 +23,6 @@ async def rate_limiter(request: Request):
     if ip not in IP_RATES:
         IP_RATES[ip] = []
     
-    # Purgar solicitudes que ya salieron de la ventana de tiempo
     IP_RATES[ip] = [t for t in IP_RATES[ip] if current_time - t < TIME_WINDOW]
     
     if len(IP_RATES[ip]) >= MAX_REQUESTS:
@@ -31,9 +33,10 @@ async def rate_limiter(request: Request):
     
     IP_RATES[ip].append(current_time)
 
-# --- ENDPOINT PRINCIPAL ---
+# --- ENDPOINTS ---
+
 @router.post("/leads", response_model=LeadResponse, dependencies=[Depends(rate_limiter)])
-async def create_lead(lead: LeadCreate, db: AsyncSession = Depends(get_db)):
+def create_lead(lead: LeadCreate, db: Session = Depends(get_db)): # <-- def normal (sin async)
     db_lead = Lead(
         nombre=lead.nombre,
         telefono=lead.telefono,
@@ -45,13 +48,21 @@ async def create_lead(lead: LeadCreate, db: AsyncSession = Depends(get_db)):
     db.add(db_lead)
     
     try:
-        await db.commit()
-        await db.refresh(db_lead)
+        db.commit() # <-- Sin await
+        db.refresh(db_lead) # <-- Sin await
         return db_lead
     except IntegrityError:
-        # El motor Postgres bloqueó el registro por el UniqueConstraint
-        await db.rollback()
+        db.rollback() # <-- Sin await
         raise HTTPException(
             status_code=400, 
             detail="Ya hemos registrado una cotización para este número telefónico en esta misma fecha."
         )
+
+@router.get("/servicios", response_model=list[ServicioResponse], summary="Listar todos los servicios de Rumba por Siempre")
+def obtener_servicios(db: Session = Depends(get_db)): # <-- def normal (sin async)
+    """
+    Consulta la base de datos de forma síncrona y devuelve los servicios.
+    """
+    result = db.execute(select(Servicio)) # <-- Sin await
+    servicios = result.scalars().all()
+    return servicios

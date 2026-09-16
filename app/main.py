@@ -1,39 +1,60 @@
 from datetime import date
-
 from fastapi import FastAPI, Request
-from app.database import engine, Base
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
-from app.api.routes import router as leads_router # Importamos las rutas
+
+# Importaciones de la base de datos y enrutadores
+from app.database import engine, Base
+from app.api.routes import router as api_router  # Renombrado genérico, ya que incluye leads y servicios
 from app.models.lead import Lead
 from app.models.evento import Evento
 from app.models.servicio import Servicio
 from app.models.usuario import Usuario
 
-# 2. Crea las tablas en la base de datos
+# 1. Crea las tablas en la base de datos
 Base.metadata.create_all(bind=engine)
+
 app = FastAPI(title="Rumba X Siempre API", version="1.0.0")
 
+# 2. Configuración de archivos estáticos y plantillas (si aún las conservas)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+# 3. Configuración de CORS para tu frontend en React
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://tu-dominio-en-cloudflare.pages.dev", "http://localhost:5173"], 
+    allow_origins=[
+        "https://tu-dominio-en-cloudflare.pages.dev", 
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ], 
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_methods=["*"],  # Modificado para evitar problemas con peticiones OPTIONS de React
+    allow_headers=["*"],  # Modificado para aceptar headers asíncronos y de Pydantic
     max_age=86400,
 )
 
-# Acoplamos el enrutador a la aplicación principal
-app.include_router(leads_router, prefix="/api")
+# 4. Acoplamos el enrutador principal con el prefijo /api
+app.include_router(api_router, prefix="/api")
+
+
+# 5. Rutas directas
 
 @app.get("/")
 async def root():
+    # Health Check para Railway
     return {"status": "API operativa", "motor": "Postgres asíncrono"}
+
+@app.get("/home", response_class=HTMLResponse)
+def home(request: Request):
+    # Movido a /home para no hacer conflicto con la raíz
+    return templates.TemplateResponse(request, "index.html")
+
+
+# 6. Lógica de Cotización Automática y WhatsApp
 
 class CotizacionRequest(BaseModel):
     nombre: str = Field(min_length=2, max_length=80)
@@ -44,7 +65,6 @@ class CotizacionRequest(BaseModel):
     invitados: int = Field(ge=20, le=5000)
     paquete: str = Field(min_length=2, max_length=40)
     extras: list[str] = []
-
 
 BASE_PRICES = {
     "esencial": 1800,
@@ -58,12 +78,6 @@ EXTRA_PRICES = {
     "animacion": 600,
     "streaming": 800,
 }
-
-
-@app.get("/", response_class=HTMLResponse)
-def home(request: Request):
-    return templates.TemplateResponse(request, "index.html")
-
 
 @app.post("/api/cotizacion")
 def crear_cotizacion(payload: CotizacionRequest):
@@ -90,7 +104,6 @@ def crear_cotizacion(payload: CotizacionRequest):
         "resumen": resumen,
         "whatsapp": build_whatsapp_message(resumen),
     }
-
 
 def build_whatsapp_message(resumen: dict) -> str:
     extras = ", ".join(resumen["extras"]) if resumen["extras"] else "sin extras"

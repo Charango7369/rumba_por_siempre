@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Date, DateTime, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Date, DateTime, UniqueConstraint, ForeignKey
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from app.database import Base
@@ -19,6 +20,9 @@ class Lead(Base):
     # Ciclo de vida del dato
     estado = Column(String(20), default="Pendiente")
     creado_en = Column(DateTime(timezone=True), default=get_bolivia_time)
+    # Dentro de la clase Lead:
+    servicio_id = Column(Integer, ForeignKey("servicios.id"), nullable=True)
+    servicio_interes = relationship("Servicio")
 
     # Restricción matemática contra duplicados en la base de datos
     __table_args__ = (
