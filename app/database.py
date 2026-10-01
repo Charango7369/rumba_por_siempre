@@ -1,19 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Cambia esta URL si usas PostgreSQL: "postgresql://usuario:password@localhost:5432/tu_base_de_datos"
-SQLALCHEMY_DATABASE_URL = "sqlite:///./rumba_por_siempre.db"
+from app.config import DATABASE_URL
 
-# engine = create_engine(SQLALCHEMY_DATABASE_URL) # Usa este si es PostgreSQL
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False} # check_same_thread es solo para SQLite
-)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_recycle=300)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-# Esta es la función que FastAPI estaba buscando
+
 def get_db():
     db = SessionLocal()
     try:

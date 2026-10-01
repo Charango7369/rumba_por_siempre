@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 # Importaciones de la base de datos y enrutadores
 from app.database import engine, Base
+from app.config import CORS_ORIGINS
 from app.api.routes import router as api_router  # Renombrado genérico, ya que incluye leads y servicios
 from app.models.lead import Lead
 from app.models.evento import Evento
@@ -26,14 +27,10 @@ templates = Jinja2Templates(directory="templates")
 # 3. Configuración de CORS para tu frontend en React
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://tu-dominio-en-cloudflare.pages.dev", 
-        "http://localhost:5173",
-        "http://127.0.0.1:5173"
-    ], 
-    allow_credentials=True,
-    allow_methods=["*"],  # Modificado para evitar problemas con peticiones OPTIONS de React
-    allow_headers=["*"],  # Modificado para aceptar headers asíncronos y de Pydantic
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=False,  # sin cookies de sesión por ahora; cambiar a True solo si la auth usa cookies
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_headers=["*"],
     max_age=86400,
 )
 
@@ -45,8 +42,12 @@ app.include_router(api_router, prefix="/api")
 
 @app.get("/")
 async def root():
-    # Health Check para Railway
-    return {"status": "API operativa", "motor": "Postgres asíncrono"}
+    return {"status": "API operativa"}
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 @app.get("/home", response_class=HTMLResponse)
 def home(request: Request):
