@@ -61,3 +61,8 @@ build/
 dist/
 *.egg-info/
 .eggs/
+
+# Archivos multimedia subidos dinámicamente
+static/uploads/*
+!static/uploads/servicios/
+!static/uploads/servicios/.gitkeep

@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: rumba_password
       POSTGRES_DB: rumba_db
     ports:
-      - "5432:5432"
+      - "5436:5432"
     volumes:
       - rumba_postgres_data:/var/lib/postgresql/data
 
